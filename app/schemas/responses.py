@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict, EmailStr
+from typing import List
 
 
 class BaseResponse(BaseModel):
@@ -16,3 +17,17 @@ class AccessTokenResponse(BaseResponse):
 class UserResponse(BaseResponse):
     user_id: str
     email: EmailStr
+
+class LoanSimulationDetail(BaseResponse):
+    parcela: float
+    amortizacao: float
+    juros: float
+    saldo_devedor: float
+
+class LoanSimulationResponse(BaseResponse):
+    amount: float
+    duration_months: int
+    tax: float
+    bank_name: str
+    bank_location: str
+    details: List[LoanSimulationDetail]    
