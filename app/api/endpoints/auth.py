@@ -1,6 +1,7 @@
 import secrets
 import time
 from typing import Any
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -16,7 +17,7 @@ from app.core.security.password import (
     get_password_hash,
     verify_password,
 )
-from app.models import RefreshToken, User
+from app.models import RefreshToken, User, Borrower, Investor
 from app.schemas.requests import RefreshTokenRequest, UserCreateRequest
 from app.schemas.responses import AccessTokenResponse, UserResponse
 
@@ -174,21 +175,37 @@ async def register_new_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=api_messages.EMAIL_ADDRESS_ALREADY_USED,
         )
-
+    
     user = User(
-        email=new_user.email,
-        hashed_password=get_password_hash(new_user.password),
-    )
+            email=new_user.email,
+            hashed_password=get_password_hash(new_user.password),
+            name=new_user.name,
+            telephone=new_user.telephone,
+            monthly_income=new_user.monthly_income,
+            cpf=new_user.cpf,
+            birth_date=datetime.strptime(new_user.birth_date, '%Y-%m-%d'),
+            pix_key=new_user.pix_key,
+        )
+    
     session.add(user)
 
     try:
         await session.commit()
+        await session.refresh(user)
+
+        borrower = Borrower(user_id=user.user_id)
+        session.add(borrower)
+
+        investor = Investor(user_id=user.user_id)
+        session.add(investor)
+
+        await session.commit()
+
     except IntegrityError:  # pragma: no cover
         await session.rollback()
-
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=api_messages.EMAIL_ADDRESS_ALREADY_USED,
+            detail="EMAIL_ADDRESS_ALREADY_USED",
         )
-
+    
     return user
