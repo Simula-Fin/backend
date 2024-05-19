@@ -1,9 +1,9 @@
 from typing import List
-from app.schemas.responses import LoanSimulationDetail
+from app.schemas.responses import SimulationDetail
 
-class LoanCalculation:
+class TaxCalculation:
     @staticmethod
-    def calcular_simulacao_emprestimo(amount: float, duration_months: int, taxa_juros: float) -> List[LoanSimulationDetail]:
+    def table_calculation(amount: float, duration_months: int, taxa_juros: float) -> List[SimulationDetail]:
         detalhes_simulacao = []
         
         parcela_fixa = (amount * (taxa_juros / 100)) / (1 - (1 + taxa_juros / 100) ** -duration_months)

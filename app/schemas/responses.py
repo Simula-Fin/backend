@@ -18,7 +18,7 @@ class UserResponse(BaseResponse):
     user_id: str
     email: EmailStr
 
-class LoanSimulationDetail(BaseResponse):
+class SimulationDetail(BaseResponse):
     parcela: float
     amortizacao: float
     juros: float
@@ -30,4 +30,20 @@ class LoanSimulationResponse(BaseResponse):
     tax: float
     bank_name: str
     bank_location: str
-    details: List[LoanSimulationDetail]    
+    details: List[SimulationDetail]    
+
+class ConsortiumSimulationResponse(BaseResponse):
+    amount: float
+    duration_months: int
+    tax: float
+    bank_name: str
+    bank_location: str
+    details: List[SimulationDetail]
+
+class FinancingSimulationResponse(BaseResponse):
+    amount: float
+    duration_months: int
+    tax: float
+    bank_name: str
+    bank_location: str
+    details: List[SimulationDetail]    

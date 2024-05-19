@@ -29,4 +29,15 @@ class LoanSimulationRequest(BaseRequest):
     duration_months: int
     tax: float
 
+class ConsortiumSimulationRequest(BaseRequest):
+    amount: float
+    duration_months: int
+    tax: float
+
+class FinancingSimulationRequest(BaseRequest):
+    amount: float
+    duration_months: int
+    tax: float    
+
+
 
