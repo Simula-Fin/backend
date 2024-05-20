@@ -19,9 +19,7 @@ app.include_router(api_router)
 # Sets all CORS enabled origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        str(origin) for origin in get_settings().security.backend_cors_origins
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,7 +28,7 @@ app.add_middleware(
 # Guards against HTTP Host Header attacks
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=get_settings().security.allowed_hosts,
+    allowed_hosts=["*"],
 )
 
 
