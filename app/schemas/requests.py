@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
+from datetime import datetime, date
 
 
 class BaseRequest(BaseModel):
@@ -21,9 +22,10 @@ class UserCreateRequest(BaseRequest):
     telephone: str
     monthly_income: float
     cpf: str
-    birth_date: str
+    birth_date: date
     pix_key: str
-    
+
+
 class LoanSimulationRequest(BaseRequest):
     amount: float
     duration_months: int

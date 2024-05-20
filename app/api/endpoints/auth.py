@@ -1,7 +1,7 @@
 import secrets
 import time
 from typing import Any
-from datetime import datetime
+from datetime import datetime, date
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -183,7 +183,7 @@ async def register_new_user(
             telephone=new_user.telephone,
             monthly_income=new_user.monthly_income,
             cpf=new_user.cpf,
-            birth_date=datetime.strptime(new_user.birth_date, '%Y-%m-%d'),
+            birth_date=new_user.birth_date,
             pix_key=new_user.pix_key,
         )
     

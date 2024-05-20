@@ -14,9 +14,9 @@
 
 
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 
-from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, String, Uuid, func, Float, Enum
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, String, Uuid, func, Float, Enum, Date
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -37,7 +37,7 @@ class User(Base):
     telephone: Mapped[str] = mapped_column(String(20), nullable=False)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     monthly_income: Mapped[float] = mapped_column(Float, nullable=False)
-    birth_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    birth_date: Mapped[date] = mapped_column(Date, nullable=False)
     cpf: Mapped[str] = mapped_column(String(11), nullable=False)
     pix_key: Mapped[str] = mapped_column(String(100), nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(128), nullable=False)

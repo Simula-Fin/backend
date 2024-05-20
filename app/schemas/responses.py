@@ -1,4 +1,5 @@
-from pydantic import BaseModel, ConfigDict, EmailStr
+from datetime import date
+from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 from typing import List
 
 
@@ -17,6 +18,15 @@ class AccessTokenResponse(BaseResponse):
 class UserResponse(BaseResponse):
     user_id: str
     email: EmailStr
+    telephone: str
+    monthly_income: float
+    cpf: str
+    birth_date: date 
+    pix_key: str
+
+    class Config:
+        orm_mode = True
+
 
 class SimulationDetail(BaseResponse):
     parcela: float
@@ -46,4 +56,31 @@ class FinancingSimulationResponse(BaseResponse):
     tax: float
     bank_name: str
     bank_location: str
-    details: List[SimulationDetail]    
+    details: List[SimulationDetail]
+
+
+class UserLoansResponse(BaseResponse):
+    amount: float
+    interest_rate: float
+    duration_months: int
+    monthly_payment: float
+    bank_name: str
+    created_at: str
+
+class UserConsortiumsResponse(BaseResponse):
+    amount: float
+    interest_rate: float
+    duration_months: int
+    monthly_payment: float
+    bank_name: str
+    created_at: str
+
+class UserFinancingsResponse(BaseResponse):
+    amount: float
+    interest_rate: float
+    duration_months: int
+    monthly_payment: float
+    bank_name: str
+    created_at: str
+
+     
