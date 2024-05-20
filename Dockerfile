@@ -1,18 +1,7 @@
 FROM python:3.10
 
-ENV PYTHONUNBUFFERED 1
-
-RUN mkdir app/
-WORKDIR /app/
-
-ADD . .
-
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-
-COPY alembic alembic
-COPY alembic.ini .
-
-RUN alembic upgrade head
-
-CMD ["python3", "app.main.py"]
+WORKDIR /code
+COPY ./requirements.txt /code/requirements.txt
+RUN pip install --no-cache-dir -r /code/requirements.txt
+COPY . /code
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
