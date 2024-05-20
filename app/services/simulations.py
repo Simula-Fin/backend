@@ -138,7 +138,7 @@ class SimulationCRUD:
     
     @staticmethod
     async def get_consortium_simulation(db: AsyncSession, user: User):
-        consortium_simulation = await db.scalars(select(LoanSimulation).where(LoanSimulation.user_id == user.user_id).options(selectinload(LoanSimulation.bank)))
+        consortium_simulation = await db.scalars(select(ConsortiumSimulation).where(ConsortiumSimulation.user_id == user.user_id).options(selectinload(ConsortiumSimulation.bank)))
 
         return [
             UserConsortiumsResponse(
@@ -153,7 +153,7 @@ class SimulationCRUD:
     
     @staticmethod
     async def get_financing_simulation(db: AsyncSession, user: User):
-        financing_simulation = await db.scalars(select(LoanSimulation).where(LoanSimulation.user_id == user.user_id).options(selectinload(LoanSimulation.bank)))
+        financing_simulation = await db.scalars(select(FinancingSimulation).where(FinancingSimulation.user_id == user.user_id).options(selectinload(FinancingSimulation.bank)))
 
         return [
             UserFinancingsResponse(
