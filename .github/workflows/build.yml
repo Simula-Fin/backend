@@ -5,6 +5,12 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch: # Adicionando o gatilho workflow_dispatch
+    # Opcional: Defina inputs se desejar capturar parâmetros no acionamento manual
+    inputs:
+      example-parameter:
+        description: "Example parameter for manual trigger"
+        required: false
 
 jobs:
   build:
@@ -21,6 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install -r requirements.txt
           pip install pytest pytest-cov pytest-asyncio
       - name: Run tests with coverage
         run: |
