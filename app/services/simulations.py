@@ -20,8 +20,16 @@ class SimulationCRUD:
             amount = loan_simulation_in.amount
             duration_months = loan_simulation_in.duration_months
             juros_rate = loan_simulation_in.tax
-            calculation_loan_simulation = TaxCalculation.table_calculation(amount, duration_months, juros_rate)
 
+            calculation_method = loan_simulation_in.calculation_method
+
+            if calculation_method == "sac":
+                calculation_loan_simulation = TaxCalculation.table_calculation_sac(amount, duration_months, juros_rate)
+            elif calculation_method == "price":
+                calculation_loan_simulation = TaxCalculation.table_calculation_price(amount, duration_months, juros_rate)
+            else:
+                raise HTTPException(status_code=400, detail="Método de cálculo inválido")
+        
             loan_simulation = LoanSimulation(
                 user_id=user.user_id,
                 amount=amount,
@@ -56,15 +64,20 @@ class SimulationCRUD:
             amount = consortium_simulation_in.amount
             duration_months = consortium_simulation_in.duration_months
             juros_rate = consortium_simulation_in.tax
+            calculation_method = consortium_simulation_in.calculation_method
 
-            calculation_consortium_simulation = TaxCalculation.table_calculation(amount, duration_months, juros_rate)
+            if calculation_method == "sac":
+                calculation_consortium_simulation = TaxCalculation.table_calculation_sac(amount, duration_months, juros_rate)
+            elif calculation_method == "price":
+                calculation_consortium_simulation = TaxCalculation.table_calculation_price(amount, duration_months, juros_rate)
+            else:
+                raise HTTPException(status_code=400, detail="Método de cálculo inválido")
 
             consortium_simulation = ConsortiumSimulation(
                 user_id=user.user_id,
-                amount=amount,
-                interest_rate=juros_rate,
                 duration_months=duration_months,
-                monthly_payment=calculation_consortium_simulation[0]['parcela'],
+                monthly_contribution=calculation_consortium_simulation[0]['parcela'],
+                total_value=calculation_consortium_simulation[0]['parcela'],
                 bank_id=bank.bank_id,
             )
 
@@ -72,14 +85,15 @@ class SimulationCRUD:
             await db.commit()
             
             return ConsortiumSimulationResponse(
-                amount=consortium_simulation.amount,
-                duration_months=consortium_simulation.duration_months,
-                tax=consortium_simulation.interest_rate,
+                amount=consortium_simulation.total_value,
+                duration_months=int(consortium_simulation.monthly_contribution),
+                tax=consortium_simulation.monthly_contribution,
                 bank_name=bank.name,
                 bank_location=bank.location,
                 details=[SimulationDetail(**detail) for detail in calculation_consortium_simulation]
             )
         except Exception as e:
+            print(e)
             raise HTTPException(status_code=404, detail="Erro to create consortium simulation") 
 
     @staticmethod
@@ -94,11 +108,20 @@ class SimulationCRUD:
             duration_months = financing_simulation_in.duration_months
             juros_rate = financing_simulation_in.tax
 
-            calculation_financing_simulation = TaxCalculation.table_calculation(amount, duration_months, juros_rate)
+            calculation_method = financing_simulation_in.calculation_method
 
+            if calculation_method == "sac":
+                calculation_financing_simulation = TaxCalculation.table_calculation_sac(amount, duration_months, juros_rate)
+            elif calculation_method == "price":
+                calculation_financing_simulation = TaxCalculation.table_calculation_price(amount, duration_months, juros_rate)
+            else:
+                raise HTTPException(status_code=400, detail="Método de cálculo inválido")
+
+            
             financing_simulation = FinancingSimulation(
                 user_id=user.user_id,
-                amount=amount,
+                total_value=amount,
+                down_payment=calculation_financing_simulation[0]['parcela'],
                 interest_rate=juros_rate,
                 duration_months=duration_months,
                 monthly_payment=calculation_financing_simulation[0]['parcela'],
@@ -106,10 +129,10 @@ class SimulationCRUD:
             )
 
             db.add(financing_simulation)
-            db.commit()
+            await db.commit()
 
             return FinancingSimulationResponse(
-                amount=financing_simulation.amount,
+                amount=financing_simulation.total_value,
                 duration_months=financing_simulation.duration_months,
                 tax=financing_simulation.interest_rate,
                 bank_name=bank.name,
@@ -154,14 +177,14 @@ class SimulationCRUD:
     @staticmethod
     async def get_financing_simulation(db: AsyncSession, user: User):
         financing_simulation = await db.scalars(select(FinancingSimulation).where(FinancingSimulation.user_id == user.user_id).options(selectinload(FinancingSimulation.bank)))
-
+        
         return [
             UserFinancingsResponse(
-                amount=financing.amount,
+                amount=financing.total_value,
                 interest_rate=financing.interest_rate,
                 duration_months=financing.duration_months,
                 monthly_payment=financing.monthly_payment,
                 bank_name=financing.bank.name,
-                created_at=financing.created_at
+                created_at=str(financing.created_at)
             ) for financing in financing_simulation
         ]
