@@ -23,9 +23,11 @@ class UserResponse(BaseResponse):
     cpf: str
     birth_date: date 
     pix_key: str
+    name: str
+    is_admin: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SimulationDetail(BaseResponse):
