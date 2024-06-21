@@ -12,8 +12,9 @@ from app.core.security.jwt import verify_jwt_token
 from app.main import app
 from app.models import RefreshToken, User
 from app.tests.conftest import default_user_password
+import pytest
 
-
+@pytest.mark.asyncio
 async def test_login_access_token_has_response_status_code(
     client: AsyncClient,
     default_user: User,
@@ -29,7 +30,7 @@ async def test_login_access_token_has_response_status_code(
 
     assert response.status_code == status.HTTP_200_OK
 
-
+@pytest.mark.asyncio
 async def test_login_access_token_jwt_has_valid_token_type(
     client: AsyncClient,
     default_user: User,
@@ -46,7 +47,7 @@ async def test_login_access_token_jwt_has_valid_token_type(
     token = response.json()
     assert token["token_type"] == "Bearer"
 
-
+@pytest.mark.asyncio
 @freeze_time("2023-01-01")
 async def test_login_access_token_jwt_has_valid_expire_time(
     client: AsyncClient,
@@ -68,7 +69,7 @@ async def test_login_access_token_jwt_has_valid_expire_time(
         == current_timestamp + get_settings().security.jwt_access_token_expire_secs
     )
 
-
+@pytest.mark.asyncio
 @freeze_time("2023-01-01")
 async def test_login_access_token_returns_valid_jwt_access_token(
     client: AsyncClient,
@@ -91,7 +92,7 @@ async def test_login_access_token_returns_valid_jwt_access_token(
     assert token_payload.iat == now
     assert token_payload.exp == token["expires_at"]
 
-
+@pytest.mark.asyncio
 async def test_login_access_token_refresh_token_has_valid_expire_time(
     client: AsyncClient,
     default_user: User,
@@ -112,7 +113,7 @@ async def test_login_access_token_refresh_token_has_valid_expire_time(
         == current_time + get_settings().security.refresh_token_expire_secs
     )
 
-
+@pytest.mark.asyncio
 async def test_login_access_token_refresh_token_exists_in_db(
     client: AsyncClient,
     default_user: User,
@@ -134,7 +135,7 @@ async def test_login_access_token_refresh_token_exists_in_db(
     )
     assert token_db_count == 1
 
-
+@pytest.mark.asyncio
 async def test_login_access_token_refresh_token_in_db_has_valid_fields(
     client: AsyncClient,
     default_user: User,
@@ -159,7 +160,7 @@ async def test_login_access_token_refresh_token_in_db_has_valid_fields(
     assert refresh_token.exp == token["refresh_token_expires_at"]
     assert not refresh_token.used
 
-
+@pytest.mark.asyncio
 async def test_auth_access_token_fail_for_not_existing_user_with_message(
     client: AsyncClient,
 ) -> None:
@@ -175,7 +176,7 @@ async def test_auth_access_token_fail_for_not_existing_user_with_message(
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {"detail": api_messages.PASSWORD_INVALID}
 
-
+@pytest.mark.asyncio
 async def test_auth_access_token_fail_for_invalid_password_with_message(
     client: AsyncClient,
     default_user: User,

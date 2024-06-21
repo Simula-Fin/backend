@@ -1,4 +1,5 @@
 import asyncio
+from datetime import date
 import os
 from collections.abc import AsyncGenerator, Generator
 
@@ -21,7 +22,16 @@ from app.models import Base, User
 default_user_id = "b75365d9-7bf9-4f54-add5-aeab333a087b"
 default_user_email = "geralt@wiedzmin.pl"
 default_user_password = "geralt"
+default_user_telephone = "48123456789"
+default_user_name = "Geralt of Rivia"
+default_user_monthly_income = 5000.0
+default_user_cpf = "12345678901"
+default_user_birth_date = date(1990, 1, 1)
+default_user_pix_key = "1234567890"
+default_user_is_admin = False
+default_user_birth_date_string = "1990-01-01"
 default_user_access_token = create_jwt_token(default_user_id).access_token
+
 
 
 @pytest.fixture(scope="session")
@@ -123,6 +133,12 @@ async def fixture_default_user(
         user_id=default_user_id,
         email=default_user_email,
         hashed_password=default_hashed_password,
+        name=default_user_name,
+        telephone=default_user_telephone,
+        monthly_income=default_user_monthly_income,
+        cpf=default_user_cpf,
+        birth_date=default_user_birth_date,
+        pix_key=default_user_pix_key,
     )
     session.add(default_user)
     await session.commit()

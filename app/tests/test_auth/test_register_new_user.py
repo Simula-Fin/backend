@@ -1,3 +1,4 @@
+from datetime import date
 from fastapi import status
 from httpx import AsyncClient
 from sqlalchemy import func, select
@@ -6,8 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import api_messages
 from app.main import app
 from app.models import User
+import pytest
 
-
+@pytest.mark.asyncio
 async def test_register_new_user_status_code(
     client: AsyncClient,
 ) -> None:
@@ -16,12 +18,18 @@ async def test_register_new_user_status_code(
         json={
             "email": "test@email.com",
             "password": "testtesttest",
+            "name": "Test User",
+            "telephone": "1234567890",
+            "monthly_income": 5000.0,
+            "cpf": "12345678901",
+            "birth_date": "1990-01-01",
+            "pix_key": "1234567890",
         },
     )
 
     assert response.status_code == status.HTTP_201_CREATED
 
-
+@pytest.mark.asyncio
 async def test_register_new_user_creates_record_in_db(
     client: AsyncClient,
     session: AsyncSession,
@@ -31,6 +39,12 @@ async def test_register_new_user_creates_record_in_db(
         json={
             "email": "test@email.com",
             "password": "testtesttest",
+            "name": "Test User",
+            "telephone": "1234567890",
+            "monthly_income": 5000.0,
+            "cpf": "12345678901",
+            "birth_date": "1990-01-01",
+            "pix_key": "1234567890",
         },
     )
 
@@ -39,14 +53,20 @@ async def test_register_new_user_creates_record_in_db(
     )
     assert user_count == 1
 
-
+@pytest.mark.asyncio
 async def test_register_new_user_cannot_create_already_created_user(
     client: AsyncClient,
     session: AsyncSession,
 ) -> None:
     user = User(
         email="test@email.com",
-        hashed_password="bla",
+        hashed_password="hashedpassword",
+        name="Test User",
+        telephone="1234567890",
+        monthly_income=5000.0,
+        cpf="12345678901",
+        birth_date=date(1990, 1, 1),
+        pix_key="1234567890",
     )
     session.add(user)
     await session.commit()
@@ -56,6 +76,12 @@ async def test_register_new_user_cannot_create_already_created_user(
         json={
             "email": "test@email.com",
             "password": "testtesttest",
+            "name": "Test User",
+            "telephone": "1234567890",
+            "monthly_income": 5000.0,
+            "cpf": "12345678901",
+            "birth_date": "1990-01-01",
+            "pix_key": "1234567890",
         },
     )
 

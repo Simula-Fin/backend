@@ -6,8 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security.password import verify_password
 from app.main import app
 from app.models import User
+import pytest
 
-
+@pytest.mark.asyncio
 async def test_reset_current_user_password_status_code(
     client: AsyncClient,
     default_user_headers: dict[str, str],
@@ -20,7 +21,7 @@ async def test_reset_current_user_password_status_code(
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
-
+@pytest.mark.asyncio
 async def test_reset_current_user_password_is_changed_in_db(
     client: AsyncClient,
     default_user_headers: dict[str, str],

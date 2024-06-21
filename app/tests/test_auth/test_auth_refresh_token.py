@@ -11,8 +11,9 @@ from app.core.config import get_settings
 from app.core.security.jwt import verify_jwt_token
 from app.main import app
 from app.models import RefreshToken, User
+import pytest
 
-
+@pytest.mark.asyncio
 async def test_refresh_token_fails_with_message_when_token_does_not_exist(
     client: AsyncClient,
 ) -> None:
@@ -26,7 +27,7 @@ async def test_refresh_token_fails_with_message_when_token_does_not_exist(
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": api_messages.REFRESH_TOKEN_NOT_FOUND}
 
-
+@pytest.mark.asyncio
 async def test_refresh_token_fails_with_message_when_token_is_expired(
     client: AsyncClient,
     default_user: User,
@@ -50,7 +51,7 @@ async def test_refresh_token_fails_with_message_when_token_is_expired(
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {"detail": api_messages.REFRESH_TOKEN_EXPIRED}
 
-
+@pytest.mark.asyncio
 async def test_refresh_token_fails_with_message_when_token_is_used(
     client: AsyncClient,
     default_user: User,
@@ -75,7 +76,7 @@ async def test_refresh_token_fails_with_message_when_token_is_used(
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {"detail": api_messages.REFRESH_TOKEN_ALREADY_USED}
 
-
+@pytest.mark.asyncio
 async def test_refresh_token_success_response_status_code(
     client: AsyncClient,
     default_user: User,
@@ -99,7 +100,7 @@ async def test_refresh_token_success_response_status_code(
 
     assert response.status_code == status.HTTP_200_OK
 
-
+@pytest.mark.asyncio
 async def test_refresh_token_success_old_token_is_used(
     client: AsyncClient,
     default_user: User,
@@ -127,7 +128,7 @@ async def test_refresh_token_success_old_token_is_used(
     assert used_test_refresh_token is not None
     assert used_test_refresh_token.used
 
-
+@pytest.mark.asyncio
 async def test_refresh_token_success_jwt_has_valid_token_type(
     client: AsyncClient,
     default_user: User,
@@ -152,7 +153,7 @@ async def test_refresh_token_success_jwt_has_valid_token_type(
     token = response.json()
     assert token["token_type"] == "Bearer"
 
-
+@pytest.mark.asyncio
 @freeze_time("2023-01-01")
 async def test_refresh_token_success_jwt_has_valid_expire_time(
     client: AsyncClient,
@@ -182,7 +183,7 @@ async def test_refresh_token_success_jwt_has_valid_expire_time(
         == current_timestamp + get_settings().security.jwt_access_token_expire_secs
     )
 
-
+@pytest.mark.asyncio
 @freeze_time("2023-01-01")
 async def test_refresh_token_success_jwt_has_valid_access_token(
     client: AsyncClient,
@@ -213,7 +214,7 @@ async def test_refresh_token_success_jwt_has_valid_access_token(
     assert token_payload.iat == now
     assert token_payload.exp == token["expires_at"]
 
-
+@pytest.mark.asyncio
 @freeze_time("2023-01-01")
 async def test_refresh_token_success_refresh_token_has_valid_expire_time(
     client: AsyncClient,
@@ -243,7 +244,7 @@ async def test_refresh_token_success_refresh_token_has_valid_expire_time(
         == current_time + get_settings().security.refresh_token_expire_secs
     )
 
-
+@pytest.mark.asyncio
 async def test_refresh_token_success_new_refresh_token_is_in_db(
     client: AsyncClient,
     default_user: User,

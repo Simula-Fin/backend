@@ -1,3 +1,4 @@
+import random
 import secrets
 import time
 from typing import Any
@@ -17,7 +18,7 @@ from app.core.security.password import (
     get_password_hash,
     verify_password,
 )
-from app.models import RefreshToken, User, Borrower, Investor
+from app.models import RefreshToken, User, Borrower, Investor, RiskProfile
 from app.schemas.requests import RefreshTokenRequest, UserCreateRequest
 from app.schemas.responses import AccessTokenResponse, UserResponse
 
@@ -199,6 +200,15 @@ async def register_new_user(
         investor = Investor(user_id=user.user_id)
         session.add(investor)
 
+        await session.commit()
+        await session.refresh(borrower)
+        
+        risk_profile = RiskProfile(
+            borrower_id=borrower.borrower_id,
+            risk_score=random.randint(15, 100),
+        )
+
+        session.add(risk_profile)
         await session.commit()
 
     except IntegrityError:  # pragma: no cover
