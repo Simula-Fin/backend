@@ -39,6 +39,12 @@ jobs:
 
     - name: Apply Database Migrations
       env:
+        SECURITY__JWT_SECRET_KEY: very-not-secret
+        DATABASE__HOSTNAME: localhost
+        DATABASE__PORT: 5432
+        DATABASE__DB: my_test_db
+        DATABASE__USERNAME: postgres
+        DATABASE__PASSWORD: postgres
         DATABASE_URL: postgresql://postgres:postgres@localhost/my_test_db
       run: |
         alembic upgrade head
