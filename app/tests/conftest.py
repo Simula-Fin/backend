@@ -17,7 +17,7 @@ from app.core.config import get_settings
 from app.core.security.jwt import create_jwt_token
 from app.core.security.password import get_password_hash
 from app.main import app as fastapi_app
-from app.models import Base, User
+from app.models import Bank, Base, LoanSimulation, User
 
 default_user_id = "b75365d9-7bf9-4f54-add5-aeab333a087b"
 default_user_email = "geralt@wiedzmin.pl"
@@ -149,3 +149,35 @@ async def fixture_default_user(
 @pytest.fixture(name="default_user_headers", scope="function")
 def fixture_default_user_headers(default_user: User) -> dict[str, str]:
     return {"Authorization": f"Bearer {default_user_access_token}"}
+
+@pytest_asyncio.fixture(name="default_bank", scope="function")
+async def fixture_default_bank(session: AsyncSession) -> Bank:
+
+    default_bank = Bank(
+        name="Test Bank",
+        location="Test Location",
+        cnpj="12345678901234",
+        telephone="1234567890",
+        juros_emprestimo=5.0,
+        juros_consortium=6.0,
+        juros_financiamento=7.0,
+    
+    )
+    session.add(default_bank)
+    session.commit()
+    return default_bank
+
+@pytest_asyncio.fixture(name="default_loan_simulation", scope="function")
+async def fixture_default_loan_simulation(session: AsyncSession, default_user: User, default_bank: Bank) -> LoanSimulation:
+
+    default_loan_simulation = LoanSimulation(
+        user_id=default_user.user_id,
+        amount=15000.0,
+        duration_months=24,
+        interest_rate=6.0,
+        monthly_payment=675.0,
+        bank_id=default_bank.bank_id
+    )
+    session.add(default_loan_simulation)
+    session.commit()
+    return default_loan_simulation
